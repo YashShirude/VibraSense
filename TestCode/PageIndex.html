@@ -143,7 +143,62 @@
       </form>
       
       <div class="cards">
-        <!-- Your existing card elements -->
+         
+        <div class="card">
+          <div class="card header">
+            <h2>ESP32 BOARD #1</h2>
+          </div>
+          <br>
+          <h4 class="LEDColor">LLED 1 : </h4> 
+          <label class="switch">
+            <input type="checkbox" id="togLED1" onclick="send_LED_State_Cmd('ESP32Slave1','togLED1','5')">
+            <div class="sliderTS"></div>
+          </label>
+          <br>
+		  <br>
+          <h4 class="LEDColor">LLED 2 : </h4> 
+          <label class="switch">
+            <input type="checkbox" id="togLED2" onclick="send_LED_State_Cmd('ESP32Slave1','togLED2','18')">
+            <div class="sliderTS"></div>
+          </label>
+          <br>
+		  <br>
+          <h4 class="LEDColor">LLED 3 : </h4> 
+          <label class="switch">
+            <input type="checkbox" id="togLED3" onclick="send_LED_State_Cmd('ESP32Slave1','togLED3','19')">
+            <div class="sliderTS"></div>
+          </label>
+          <br>
+        </div>
+        
+        <div class="card">
+          <div class="card header">
+            <h2>ESP32 BOARD #2</h2>
+          </div>
+          <br>
+          <h4 class="LEDColor">RLED 1 : </h4> 
+          <label class="switch">
+            <input type="checkbox" id="togLED1" onclick="send_LED_State_Cmd('ESP32Slave2','togLED1','5')">
+            <div class="sliderTS"></div>
+          </label>
+          <br>
+		  <br>
+		  <h4 class="LEDColor">RLED 2 : </h4>
+		  <label class="switch">
+            <input type="checkbox" id="togLED2" onclick="send_LED_State_Cmd('ESP32Slave2','togLED2','18')">
+            <div class="sliderTS"></div>
+          </label>
+          <br>
+		  <br>
+		  <h4 class="LEDColor">RLED 3 : </h4>
+		  <label class="switch">
+            <input type="checkbox" id="togLED3" onclick="send_LED_State_Cmd('ESP32Slave2','togLED3','19')">
+            <div class="sliderTS"></div>
+          </label>
+          <br>
+		  <br>
+        </div>
+        
       </div>
     </div>
     
