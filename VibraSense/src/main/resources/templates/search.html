@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibraSense</title>
+    <link rel="stylesheet" href="/css/search.css"> <!-- Linking your new CSS file -->
+</head>
+<body>
+<div class="container">
+    <h1>VibraSense</h1>
+    <i>where curiosity meets knowledge</i>
+
+    <div class="gradient-background">
+        <!-- Search bar and button -->
+        <div class="search-bar">
+            <form action="/search" method="post">  <!-- Form for handling search -->
+                <input type="text" id="inputQuestion" name="question" placeholder="Search" required autocomplete="off">
+                <button type="submit"></button>
+            </form>
+        </div>
+
+        <!-- Area to display the answer -->
+        <div class="search-answer">
+            <p id="answerDisplay" th:attr="data-answer=${answer}"></p>
+        </div>
+    </div>
+</div>
+
+<script src="/js/searchLogic.js"></script> <!-- Link to the JavaScript file -->
+</body>
+</html>
