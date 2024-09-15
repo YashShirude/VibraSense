@@ -1,4 +1,4 @@
-console.log("Loaded searchLogic.js");
+console.log("Loaded searchLogic.js Successfully");
 
 let isHighlighting = false;
 let highlightInterval;
