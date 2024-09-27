@@ -47,6 +47,7 @@ i {
     outline: none;
     color: #fff;
     padding: 10px;
+    width: 600px;
     flex: 1;
     text-align: left; /* Left align */
     vertical-align: middle;
@@ -66,6 +67,17 @@ i {
     right: 10px; /* Place at the right corner */
     width: 40px;
     height: 38px;
+}
+
+#answerDisplay {
+    padding: 0;
+    margin: 0;
+    white-space: pre-wrap;       /* Respect line breaks in the text */
+    word-wrap: break-word;       /* Break long words if needed */
+    word-break: break-all;       /* Ensure long unbroken strings like '*****' are wrapped */
+    overflow-wrap: break-word;   /* Ensures that long words break within container boundaries */
+    max-width: 100%;             /* Ensure the content stays within the container width */
+    overflow: hidden;
 }
 
 .search-bar button::before {
@@ -100,6 +112,8 @@ i {
     margin-top: 20px;
     color: white;
     font-size: 18px;
+    overflow-y: auto;  /* Enables vertical scrolling */
+    overflow-x: hidden;
 }
 /* Remove autofill suggestions and background color */
 .search-bar input::-webkit-autofill {

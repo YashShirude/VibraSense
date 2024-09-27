@@ -16,7 +16,8 @@
         <div class="search-bar">
             <form action="/search" method="post">  <!-- Form for handling search -->
                 <input type="text" id="inputQuestion" name="question" placeholder="Search" required autocomplete="off">
-                <button type="submit"></button>
+                <input type="hidden" id="realQuestionInput" name="question">
+                <button type="button" id="submitQuestion" onclick="submitQuestionToServer()"></button>
             </form>
         </div>
 

@@ -1,10 +1,64 @@
 console.log("Loaded searchLogic.js Successfully");
 
+let answer = "";
 let isHighlighting = false;
 let highlightInterval;
+let interval;
 let index = 0;
 let sentenceStartStack = [];
 let currentSentenceIndex = 0;
+let isEncrypted = false;
+let realSearchInput = "";
+
+let encryptedAnswer = "";
+
+// Add event listeners when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("keydown", handleKeyEvents);
+
+    // Fetch the answer stored in the data-answer attribute
+    const answerDisplay = document.getElementById('answerDisplay');
+    answer = answerDisplay.getAttribute('data-answer');
+
+    console.log("Answer fetched:", answer); // Debugging line to check if answer is fetched
+
+    let storedIsEncrypted = sessionStorage.getItem('isEncrypted');
+
+        // Set isEncrypted based on session Storage or default to false if no stored value
+    if (storedIsEncrypted === null) {
+        console.log("No stored encryption state found. Defaulting to false.");
+        isEncrypted = false;  // Default to false if no value is found in session Storage
+    } else {
+        isEncrypted = (storedIsEncrypted === 'true');  // Convert string 'true'/'false' to boolean
+        console.log("Loaded encryption state from session Storage:", isEncrypted);
+    }
+    console.log(storedIsEncrypted);
+
+    if (answer && answer.length > 0) {
+        for (let i = 0; i < answer.length; i++) {
+          encryptedAnswer += '*';
+        }
+        if(isEncrypted){
+            typeAnswer(encryptedAnswer);
+        }else{
+            typeAnswer(answer);
+        }
+
+    }
+
+    // Set up the event listener for search input encryption
+    const searchInput = document.getElementById('inputQuestion');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearchInput);  // Handle changes to search input
+        // Set the input field type based on the encryption state
+        if (isEncrypted) {
+            searchInput.type = 'password';  // Change to password field when encrypted
+        } else {
+            searchInput.type = 'text';  // Change to text field when not encrypted
+        }
+    }
+});
+
 
 // Function to gradually display the answer
 function typeAnswer(answer) {
@@ -13,8 +67,10 @@ function typeAnswer(answer) {
 
     console.log("Typing the answer..."); // Debugging line
 
+     answerDisplay.scrollTop = 0;
+
     // Gradually print the text character by character
-    const interval = setInterval(function() {
+    interval = setInterval(function() {
         if (typeIndex < answer.length) {
             answerDisplay.innerHTML += answer[typeIndex];
             typeIndex++;
@@ -99,6 +155,30 @@ function moveHighlightToStartOfSentence() {
     }
 }
 
+// Function to handle search input and encrypt if needed
+function handleSearchInput(event) {
+    const searchInput = event.target;
+    const currentInputValue = searchInput.value;
+
+    if (isEncrypted) {
+        // When encrypted, only append new characters to the real input
+        if (currentInputValue.length > realSearchInput.length) {
+            realSearchInput += currentInputValue.slice(realSearchInput.length);
+        } else if (currentInputValue.length < realSearchInput.length) {
+            // Handle backspace or deletion
+            realSearchInput = realSearchInput.slice(0, currentInputValue.length);
+        }
+
+        // Mask the input display with '*' but keep the real value stored
+    } else {
+        // If not encrypted, allow normal input behavior and store the value
+        realSearchInput = currentInputValue;
+    }
+
+    console.log(`Real search input: ${realSearchInput}`);
+}
+
+
 // Function to move highlighting to the start of the text
 function moveHighlightToStartOfText() {
     const answerDisplay = document.getElementById('answerDisplay');
@@ -144,19 +224,47 @@ function handleKeyEvents(event) {
         console.log("Ctrl + Shift + R detected");
         moveHighlightToStartOfText();
     }
+
+    if (event.ctrlKey && event.shiftKey && event.key === 'H') {
+            const searchInput = document.getElementById('inputQuestion');
+            event.preventDefault();
+            console.log("Ctrl + Shift + H detected");
+            clearInterval(interval);
+            if(isEncrypted){
+                isEncrypted = false;
+                answerDisplay.innerHTML = answer; // Making the typing very fast
+                if (searchInput) {
+                    searchInput.type = 'text';  // Change input field back to normal text
+                    searchInput.value = realSearchInput;  // Display real search input
+                }
+            }else{
+                isEncrypted = true;
+                answerDisplay.innerHTML = encryptedAnswer; // Making the typing very fast
+                if (searchInput) {
+                    searchInput.type = 'password';  // Change input field to password type
+                    //searchInput.value = '*'.repeat(realSearchInput.length);  // Mask the search input
+                }
+            }
+            try {
+               sessionStorage.setItem('isEncrypted', isEncrypted);
+               console.log("Encryption state saved:", isEncrypted);  // Debugging log
+            } catch (e) {
+                console.error("Failed to set sessionStorage:", e);  // Error log if sessionStorage fails
+            }
+    }
 }
 
-// Add event listeners when the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function() {
-    document.addEventListener("keydown", handleKeyEvents);
+function submitQuestionToServer() {
+    const realQuestionInput = document.getElementById('realQuestionInput');
 
-    // Fetch the answer stored in the data-answer attribute
-    const answerDisplay = document.getElementById('answerDisplay');
-    const answer = answerDisplay.getAttribute('data-answer');
+    // Set the hidden input's value to the real search input value
+    realQuestionInput.value = realSearchInput;
 
-    console.log("Answer fetched:", answer); // Debugging line to check if answer is fetched
+    console.log("Submitting real question to server:", realSearchInput);
 
-    if (answer && answer.length > 0) {
-        typeAnswer(answer);
-    }
-});
+    // Now let the form submit with the real question
+    const form = document.getElementById('questionForm');
+    form.submit();  // Submit the form
+}
+
+
