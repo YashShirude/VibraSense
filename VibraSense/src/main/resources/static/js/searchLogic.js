@@ -12,6 +12,12 @@ let isHighlightingPaused = false;  // Track if highlighting is paused
 let currentHighlightText = "";
 let encryptedAnswer = "";
 let isPaused = false;  // Track if highlighting is paused
+let highlightSpeed = 200;  // Default speed set to 200 ms
+const speedLabels = {
+    250: "Slow Speed",
+    200: "Normal Speed",
+    150: "Fast Speed"
+};
 
 
 // Add event listeners when the DOM is fully loaded
@@ -152,6 +158,7 @@ function moveHighlightToStartOfText() {
     }
 }
 
+// Update the start or resume highlighting function to use the highlightSpeed
 function startOrResumeHighlighting() {
     const answerDisplay = document.getElementById('answerDisplay');
     const text = isEncrypted ? encryptedAnswer : answer;  // Use correct version of text
@@ -186,7 +193,7 @@ function startOrResumeHighlighting() {
             clearInterval(highlightInterval);  // Stop when highlighting completes
             isHighlighting = false;
         }
-    }, 200);  // Adjust the highlighting speed
+    }, highlightSpeed);  // Use the highlight speed variable
 }
 
 // Function to pause highlighting
@@ -197,6 +204,21 @@ function pauseHighlighting() {
         isPaused = true;
         console.log("Highlighting paused at index:", index);
     }
+}
+
+// Function to update speed on the sidebar
+function updateSpeedOnSidebar() {
+    const sidebar = document.getElementById('settingsSidebar');
+    const speedDisplay = document.getElementById('currentSpeed');
+    if (speedDisplay) {
+        speedDisplay.textContent = speedLabels[highlightSpeed];
+    }
+    sidebar.style.display = 'block';  // Show the sidebar
+
+    // Hide the sidebar after 5 seconds
+    setTimeout(() => {
+        sidebar.style.display = 'none';
+    }, 5000);
 }
 
 // Function to toggle encryption
@@ -212,8 +234,17 @@ function toggleEncryption() {
 
     console.log("Toggled encryption. Current state:", isEncrypted ? "Encrypted" : "Decrypted");
 
-    const searchInput = document.getElementById('inputQuestion');
-    searchInput.type = isEncrypted ? 'password' : 'text';  // Toggle between password and text type
+    // Show the sidebar for 5 seconds
+    const sidebar = document.getElementById('settingsSidebar');
+    const encryptionStatus = document.getElementById('encryptionStatus');
+    encryptionStatus.textContent = isEncrypted ? "ON" : "OFF";  // Update encryption status in the sidebar
+
+    sidebar.style.display = 'block';  // Show the sidebar
+
+    // Hide the sidebar after 5 seconds
+    setTimeout(() => {
+        sidebar.style.display = 'none';
+    }, 5000);
 
     // If highlighting is active, continue from the current index with the new text
     if (isHighlighting) {
@@ -231,6 +262,9 @@ function toggleEncryption() {
 
 // Function to handle the key events
 function handleKeyEvents(event) {
+    const sidebar = document.getElementById('settingsSidebar');
+    const speedStatus = document.getElementById('currentSpeed');
+
     if (event.ctrlKey && event.shiftKey && event.key === 'S') {
         event.preventDefault();
         console.log("Ctrl + Shift + S detected");
@@ -264,6 +298,30 @@ function handleKeyEvents(event) {
     if (event.ctrlKey && event.shiftKey && event.key === 'H') {
         event.preventDefault();
         toggleEncryption();  // Toggle encryption and manage highlighting
+    }
+
+    if (event.ctrlKey && event.key === '1') {
+        event.preventDefault();
+        highlightSpeed = 250;  // Set speed to 250 ms
+        console.log("Highlight speed set to 250 ms");
+        updateSpeedOnSidebar();  // Update the sidebar with the current speed
+        speedStatus.textContent = "Slow Speed";  // Update encryption status in the sidebar
+
+
+    }
+
+    if (event.ctrlKey && event.key === '2') {
+        event.preventDefault();
+        highlightSpeed = 200;  // Set speed to 200 ms
+        console.log("Highlight speed set to 200 ms");
+        updateSpeedOnSidebar();  // Update the sidebar with the current speed
+    }
+
+    if (event.ctrlKey && event.key === '3') {
+        event.preventDefault();
+        highlightSpeed = 150;  // Set speed to 150 ms
+        console.log("Highlight speed set to 150 ms");
+        updateSpeedOnSidebar();  // Update the sidebar with the current speed
     }
 }
 
