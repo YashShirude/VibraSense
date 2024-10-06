@@ -6,11 +6,13 @@ let highlightInterval;
 let interval;
 let index = 0;
 let sentenceStartStack = [];
-let currentSentenceIndex = 0;
 let isEncrypted = false;
 let realSearchInput = "";
-
+let isHighlightingPaused = false;  // Track if highlighting is paused
+let currentHighlightText = "";
 let encryptedAnswer = "";
+let isPaused = false;  // Track if highlighting is paused
+
 
 // Add event listeners when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
@@ -82,51 +84,6 @@ function typeAnswer(answer) {
     }, 12);  // Adjust typing speed (12ms per character)
 }
 
-// Function to perform highlighting of text based on the current index
-function highlightText(text, answerDisplay) {
-    clearInterval(highlightInterval);
-
-    highlightInterval = setInterval(function() {
-        if (index < text.length) {
-            const highlightedText = text.substring(0, index + 1);
-            const remainingText = text.substring(index + 1);
-
-            // Push sentence start index if full stop is encountered
-            if (text[index] === '.') {
-                sentenceStartStack.push(index);
-                console.log(`Full stop found at index ${index}. Pushing to stack.`);
-            }
-
-            answerDisplay.innerHTML = `<span style="background-color: green;">${highlightedText}</span>${remainingText}`;
-            index++;
-        } else {
-            clearInterval(highlightInterval);  // Stop the interval when done
-            isHighlighting = false;  // Reset highlighting state
-        }
-    }, 200);  // Adjust highlighting speed (200ms per character)
-}
-
-// Function to start or pause highlighting after pressing Ctrl + Shift + Space
-function toggleHighlighting() {
-    const answerDisplay = document.getElementById('answerDisplay');
-    const text = answerDisplay.getAttribute('data-highlighted');
-
-    if (!text) {
-        console.log("No text available for highlighting.");
-        return;
-    }
-
-    if (isHighlighting) {
-        console.log("Pausing highlighting.");
-        clearInterval(highlightInterval);
-        isHighlighting = false;
-    } else {
-        console.log("Starting or resuming highlighting.");
-        highlightText(text, answerDisplay);
-        isHighlighting = true;
-    }
-}
-
 // Function to move highlighting to the start of the current sentence
 function moveHighlightToStartOfSentence() {
     const answerDisplay = document.getElementById('answerDisplay');
@@ -148,9 +105,7 @@ function moveHighlightToStartOfSentence() {
         console.log(`Popped index ${index} from stack. Moving highlight.`);
     }
 
-    if (isHighlighting) {
-        highlightText(text, answerDisplay);
-    } else {
+    if (!isHighlighting) {
         answerDisplay.innerHTML = `<span style="background-color: green;">${text.substring(0, index)}</span>${text.substring(index)}`;
     }
 }
@@ -192,10 +147,85 @@ function moveHighlightToStartOfText() {
     console.log("Moving highlight to start of the text.");
     index = 0;
 
-    if (isHighlighting) {
-        highlightText(text, answerDisplay);
-    } else {
+    if (!isHighlighting) {
         answerDisplay.innerHTML = `<span style="background-color: green;">${text.substring(0, index)}</span>${text.substring(index)}`;
+    }
+}
+
+function startOrResumeHighlighting() {
+    const answerDisplay = document.getElementById('answerDisplay');
+    const text = isEncrypted ? encryptedAnswer : answer;  // Use correct version of text
+
+    if (!text) return;
+
+    if (isPaused) {
+        console.log("Resuming highlighting from index:", index);
+        isPaused = false;
+    } else {
+        console.log("Starting highlighting from index:", index);
+    }
+
+    if (isHighlighting) {
+        clearInterval(highlightInterval);  // Pause the existing highlighting if needed
+    }
+
+    isHighlighting = true;
+
+    // Start or resume highlighting from the current index
+    highlightInterval = setInterval(() => {
+        if (index < text.length) {
+            // Check if the current character is a full stop
+            if (text[index] === '.') {
+                sentenceStartStack.push(index);  // Push the full stop index into the stack
+            }
+
+            // Highlight text up to the current index
+            answerDisplay.innerHTML = `<span style="background-color: green;">${text.substring(0, index + 1)}</span>${text.substring(index + 1)}`;
+            index++;
+        } else {
+            clearInterval(highlightInterval);  // Stop when highlighting completes
+            isHighlighting = false;
+        }
+    }, 200);  // Adjust the highlighting speed
+}
+
+// Function to pause highlighting
+function pauseHighlighting() {
+    if (isHighlighting) {
+        clearInterval(highlightInterval);  // Stop the interval when paused
+        isHighlighting = false;
+        isPaused = true;
+        console.log("Highlighting paused at index:", index);
+    }
+}
+
+// Function to toggle encryption
+function toggleEncryption() {
+    const answerDisplay = document.getElementById('answerDisplay');
+    isEncrypted = !isEncrypted;  // Toggle encryption state
+
+    // Update the appropriate text (encrypted or decrypted) based on the current index
+    const text = isEncrypted ? encryptedAnswer : answer;
+
+    // Display the text up to the current highlighted index
+    answerDisplay.innerHTML = `<span style="background-color: green;">${text.substring(0, index)}</span>${text.substring(index)}`;
+
+    console.log("Toggled encryption. Current state:", isEncrypted ? "Encrypted" : "Decrypted");
+
+    const searchInput = document.getElementById('inputQuestion');
+    searchInput.type = isEncrypted ? 'password' : 'text';  // Toggle between password and text type
+
+    // If highlighting is active, continue from the current index with the new text
+    if (isHighlighting) {
+        startOrResumeHighlighting();  // Restart highlighting with the new text state
+    }
+
+    // Save the encryption state in session storage
+    try {
+        sessionStorage.setItem('isEncrypted', isEncrypted);
+        console.log("Encryption state saved:", isEncrypted);
+    } catch (e) {
+        console.error("Failed to set sessionStorage:", e);
     }
 }
 
@@ -209,8 +239,14 @@ function handleKeyEvents(event) {
 
     if (event.ctrlKey && event.shiftKey && event.key === ' ') {
         event.preventDefault();
-        console.log("Ctrl + Shift + Space detected");
-        toggleHighlighting();
+        console.log("Ctrl + Shift + Space detected: Toggle Start/Pause Highlighting");
+
+        // Toggle between pause and resume highlighting
+        if (isHighlighting) {
+            pauseHighlighting();  // If highlighting is active, pause it
+        } else {
+            startOrResumeHighlighting();  // If not active or paused, start or resume it
+        }
     }
 
     if (event.ctrlKey && event.shiftKey && event.key === 'ArrowLeft') {
@@ -226,31 +262,8 @@ function handleKeyEvents(event) {
     }
 
     if (event.ctrlKey && event.shiftKey && event.key === 'H') {
-            const searchInput = document.getElementById('inputQuestion');
-            event.preventDefault();
-            console.log("Ctrl + Shift + H detected");
-            clearInterval(interval);
-            if(isEncrypted){
-                isEncrypted = false;
-                answerDisplay.innerHTML = answer; // Making the typing very fast
-                if (searchInput) {
-                    searchInput.type = 'text';  // Change input field back to normal text
-                    searchInput.value = realSearchInput;  // Display real search input
-                }
-            }else{
-                isEncrypted = true;
-                answerDisplay.innerHTML = encryptedAnswer; // Making the typing very fast
-                if (searchInput) {
-                    searchInput.type = 'password';  // Change input field to password type
-                    //searchInput.value = '*'.repeat(realSearchInput.length);  // Mask the search input
-                }
-            }
-            try {
-               sessionStorage.setItem('isEncrypted', isEncrypted);
-               console.log("Encryption state saved:", isEncrypted);  // Debugging log
-            } catch (e) {
-                console.error("Failed to set sessionStorage:", e);  // Error log if sessionStorage fails
-            }
+        event.preventDefault();
+        toggleEncryption();  // Toggle encryption and manage highlighting
     }
 }
 

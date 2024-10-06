@@ -38,6 +38,7 @@ public class SearchController {
 
     @PostMapping("/search")
     public String getAnswer(@RequestParam("question") String question, Model model) {
+        question = question.substring(0,question.length()-1); // getting an extra comma at the last
         return searchService.getAnswer(question,model);
     }
 }
