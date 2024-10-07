@@ -18,10 +18,16 @@ const speedLabels = {
     200: "Normal Speed",
     150: "Fast Speed"
 };
-
+let wordLimit = 75;  // Default word limit
+const sizeLabels = {
+    50: "50 Words",
+    75: "75 Words",
+    100: "100 Words"
+};
 
 // Add event listeners when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
+
     document.addEventListener("keydown", handleKeyEvents);
 
     // Fetch the answer stored in the data-answer attribute
@@ -31,8 +37,9 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("Answer fetched:", answer); // Debugging line to check if answer is fetched
 
     let storedIsEncrypted = sessionStorage.getItem('isEncrypted');
+    let Question = sessionStorage.getItem('Question');
 
-        // Set isEncrypted based on session Storage or default to false if no stored value
+    // Set isEncrypted based on session Storage or default to false if no stored value
     if (storedIsEncrypted === null) {
         console.log("No stored encryption state found. Defaulting to false.");
         isEncrypted = false;  // Default to false if no value is found in session Storage
@@ -41,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Loaded encryption state from session Storage:", isEncrypted);
     }
     console.log(storedIsEncrypted);
+    console.log(Question);
 
     if (answer && answer.length > 0) {
         for (let i = 0; i < answer.length; i++) {
@@ -221,6 +229,37 @@ function updateSpeedOnSidebar() {
     }, 5000);
 }
 
+// Function to update speed on the sidebar
+function updateSizeOnSidebar() {
+    const sidebar = document.getElementById('settingsSidebar');
+    const sizeDisplay = document.getElementById('responseSize');
+    if (sizeDisplay) {
+        sizeDisplay.textContent = sizeLabels[wordLimit];
+    }
+    sidebar.style.display = 'block';  // Show the sidebar
+
+    // Hide the sidebar after 5 seconds
+    setTimeout(() => {
+        sidebar.style.display = 'none';
+    }, 5000);
+}
+
+function updateEncryptionOnSidebar() {
+    const sidebar = document.getElementById('settingsSidebar');
+    const encryptionStatus = document.getElementById('encryptionStatus');
+    if(encryptionStatus){
+        encryptionStatus.textContent = isEncrypted ? "ON" : "OFF";  // Update encryption status in the sidebar
+    }
+
+    sidebar.style.display = 'block';  // Show the sidebar
+
+    // Hide the sidebar after 5 seconds
+    setTimeout(() => {
+        sidebar.style.display = 'none';
+    }, 5000);
+}
+
+
 // Function to toggle encryption
 function toggleEncryption() {
     const answerDisplay = document.getElementById('answerDisplay');
@@ -235,16 +274,7 @@ function toggleEncryption() {
     console.log("Toggled encryption. Current state:", isEncrypted ? "Encrypted" : "Decrypted");
 
     // Show the sidebar for 5 seconds
-    const sidebar = document.getElementById('settingsSidebar');
-    const encryptionStatus = document.getElementById('encryptionStatus');
-    encryptionStatus.textContent = isEncrypted ? "ON" : "OFF";  // Update encryption status in the sidebar
-
-    sidebar.style.display = 'block';  // Show the sidebar
-
-    // Hide the sidebar after 5 seconds
-    setTimeout(() => {
-        sidebar.style.display = 'none';
-    }, 5000);
+    updateEncryptionOnSidebar();
 
     // If highlighting is active, continue from the current index with the new text
     if (isHighlighting) {
@@ -306,8 +336,6 @@ function handleKeyEvents(event) {
         console.log("Highlight speed set to 250 ms");
         updateSpeedOnSidebar();  // Update the sidebar with the current speed
         speedStatus.textContent = "Slow Speed";  // Update encryption status in the sidebar
-
-
     }
 
     if (event.ctrlKey && event.key === '2') {
@@ -323,19 +351,59 @@ function handleKeyEvents(event) {
         console.log("Highlight speed set to 150 ms");
         updateSpeedOnSidebar();  // Update the sidebar with the current speed
     }
+
+    if (event.ctrlKey && event.key === '8') {
+        event.preventDefault();
+        wordLimit = 50;
+        console.log("Word limit set to 50 words");
+        updateSizeOnSidebar();
+    }
+
+    if (event.ctrlKey && event.key === '9') {
+        event.preventDefault();
+        wordLimit = 75;
+        console.log("Word limit set to 75 words");
+        updateSizeOnSidebar();
+    }
+
+    if (event.ctrlKey && event.key === '0') {
+        event.preventDefault();
+        wordLimit = 100;
+        console.log("Word limit set to 100 words");
+        updateSizeOnSidebar();
+    }
 }
 
 function submitQuestionToServer() {
-    const realQuestionInput = document.getElementById('realQuestionInput');
+    // Get the user's input from the search bar
+    const inputQuestion = document.getElementById('inputQuestion').value;
+    console.log("User's input question:", inputQuestion);
 
-    // Set the hidden input's value to the real search input value
-    realQuestionInput.value = realSearchInput;
+    // Append the word limit string to the input question
+    const modifiedQuestion = `${inputQuestion}. Limit the response to ${wordLimit} words.`;
+    console.log("Modified question with word limit:", modifiedQuestion);
 
-    console.log("Submitting real question to server:", realSearchInput);
+    // Check if inputQuestion is actually empty
+    if (!inputQuestion || inputQuestion.trim() === "") {
+        console.error("Input question is empty!");
+        return; // Stop the submission if the input is empty
+    }
 
-    // Now let the form submit with the real question
-    const form = document.getElementById('questionForm');
-    form.submit();  // Submit the form
+    // Store the modified question in sessionStorage
+    try {
+        sessionStorage.setItem('Question', modifiedQuestion);
+        console.log("Stored in sessionStorage:", sessionStorage.getItem('Question'));
+    } catch (e) {
+        console.error("Failed to set sessionStorage:", e);
+    }
+
+    // Set the hidden input value to the modified question
+    document.getElementById('realQuestionInput').value = modifiedQuestion;
+
+    // Submit the form
+    document.getElementById('questionForm').submit();
 }
+
+
 
 

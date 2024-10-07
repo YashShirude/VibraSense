@@ -17,7 +17,7 @@
             <form action="/search" method="post">  <!-- Form for handling search -->
                 <input type="text" id="inputQuestion" name="question" placeholder="Search" required autocomplete="off">
                 <input type="hidden" id="realQuestionInput" name="question">
-                <button type="button" id="submitQuestion" onclick="submitQuestionToServer()"></button>
+                <button type="submit" id="submitQuestion" onclick="submitQuestionToServer()"></button>
             </form>
         </div>
 
@@ -31,10 +31,13 @@
 <div id="settingsSidebar">
     <h2>Settings</h2>
     <div>
-        <p>Encryption is <span id="encryptionStatus"></span></p>
+        <p>Encryption is <span id="encryptionStatus">OFF</span></p>
     </div>
     <div>
         <span>Current Speed: <span id="currentSpeed">Normal Speed</span></span>
+    </div>
+    <div>
+        <span>Response Size: <span id="responseSize">75 Words</span></span>
     </div>
     <!-- You can add more settings options here -->
 
