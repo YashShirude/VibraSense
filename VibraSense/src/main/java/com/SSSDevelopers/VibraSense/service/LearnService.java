@@ -20,9 +20,10 @@ public class LearnService {
         this.navigationService = navigationService;
     }
 
-    public String getLearningModule(String module, Model model) {
-        if(module.equals(learnUrl) || module.equals(searchUrl) || module.equals(practiceUrl)){
-            return navigationService.navigateTo(module);
+    public String getLearningModule(String page, Model model) {
+        System.out.println(page);
+        if(page.equals(learnUrl) || page.equals(searchUrl) || page.equals(practiceUrl)){
+            return navigationService.navigateTo(page);
         }
         // Call the Learning Modules Repository
         return "Code the Learning Modules";

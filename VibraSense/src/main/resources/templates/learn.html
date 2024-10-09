@@ -1,18 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Ask a Question</title>
+    <title>VibraSense-Learn</title>
     <script src="/js/learnLogic.js"></script>
-
+    <link rel="stylesheet" href="/css/learn.css"> <!-- Linking your new CSS file -->
 </head>
 <body>
-<form action="/learn" method="post">
-    <label for="inputLearnModule">Search for Learning Modules:</label>
-    <input type="text" id="inputLearnModule" name="module" required>
-    <button type="submit">Submit</button>
-</form>
+<div class="container">
+    <h1>VibraSense</h1>
+    <i>where curiosity meets knowledge</i>
 
-<h1>Learning Modules coming Soon!!</h1>
+    <div class="gradient-background">
+        <!-- Search bar and button -->
+        <div class="learn-bar">
+            <form action="/learn" method="post">
+                <input type="text" id="inputLearnText" name="question" placeholder="Learn" required autocomplete="off">
+                <button type="submit" id="submitLearnText" onclick="submitLearnTextToServer()"></button>
+            </form>
+        </div>
+        <!-- Area to display the answer -->
+        <div class="learnTextDisplay">
+            <p id="learnDisplay" th:attr="data-answer=${answer}"></p>
+        </div>
+    </div>
 
+    <div id="settingsSidebar">
+        <h2>Settings</h2>
+        <div>
+            <span>Current Speed: <span id="currentSpeed">Normal Speed</span></span>
+        </div>
+        <!-- You can add more settings options here -->
+    </div>
+</div>
 </body>
 </html>

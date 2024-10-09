@@ -1,0 +1,146 @@
+/* Overall zoom */
+body {
+    zoom: 85%; /* Zoom out by 80% */
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background-color: #13072e;
+}
+
+/* Container */
+.container {
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #fff;
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+i {
+    color: #888;
+    font-size: 18px;
+    margin-bottom: 20px; /* Add spacing between i and gradient-background */
+}
+
+/* Search bar styling */
+.learn-bar {
+    background-color: #24114e;
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    width: 699px;
+    height: 54px;
+    margin: 0 auto;
+    margin-top: 20px;
+    position: relative; /* To position the arrow button */
+}
+
+/* Left-align the placeholder */
+.learn-bar input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    padding: 10px;
+    width: 600px;
+    flex: 1;
+    text-align: left; /* Left align */
+    vertical-align: middle;
+    font-size: 18px;
+}
+
+/* Black arrow on white button at the corner */
+.learn-bar button {
+    background-color: white;
+    border-radius: 50%;
+    padding: 8px;
+    border: none;
+    outline: none;
+    color: black; /* Black arrow */
+    cursor: pointer;
+    position: absolute;
+    right: 10px; /* Place at the right corner */
+    width: 40px;
+    height: 38px;
+}
+
+#learnTextDisplay {
+    padding: 0;
+    margin: 0;
+    white-space: pre-wrap;       /* Respect line breaks in the text */
+    word-wrap: break-word;       /* Break long words if needed */
+    word-break: break-all;       /* Ensure long unbroken strings like '*****' are wrapped */
+    overflow-wrap: break-word;   /* Ensures that long words break within container boundaries */
+    max-width: 100%;             /* Ensure the content stays within the container width */
+    overflow: hidden;
+}
+
+.learn-bar button::before {
+    content: "→"; /* Arrow symbol */
+    font-size: 20px;
+    color: black; /* Black arrow */
+}
+
+/* Gradient background */
+.gradient-background {
+    background-image: linear-gradient(to bottom, #5a389d, #6da6ff);
+    border-radius: 10px;
+    padding: 20px;
+    width: 1180px;
+    height: 580px;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+/* Answer display */
+.learnTextDisplay {
+    background-color: #24114e;
+    background-image: linear-gradient(135deg, #13072e, #3f2182);
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1103px;
+    height: 372px;
+    margin: 0 auto;
+    margin-top: 20px;
+    color: white;
+    font-size: 18px;
+    overflow-y: auto;  /* Enables vertical scrolling */
+    overflow-x: hidden;
+}
+/* Remove autofill suggestions and background color */
+.learn-bar input::-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px #24114e inset;
+    -webkit-text-fill-color: #fff !important;
+}
+
+.learn-bar input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 30px #24114e inset;
+    -webkit-text-fill-color: #fff !important;
+}
+
+.learn-bar input:-webkit-autofill::first-line {
+    color: #fff;
+}
+
+.learn-bar input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: #aaa;
+    text-align: left; /* Left align placeholder text */
+}
+
+.learn-bar input:-ms-input-placeholder { /* IE 10+ */
+    color: #aaa;
+    text-align: left;
+}
+
+.learn-bar input::placeholder { /* Modern browsers */
+    color: #aaa;
+    text-align: left;
+}

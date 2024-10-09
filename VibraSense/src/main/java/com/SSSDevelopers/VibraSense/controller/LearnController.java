@@ -24,7 +24,7 @@ public class LearnController {
     }
 
     @PostMapping("/learn")
-    public String getLearningModule(@RequestParam("module") String module, Model model) {
+    public String getLearningModule(@RequestParam("question") String module, Model model) {
         return learnService.getLearningModule(module,model);
     }
 }

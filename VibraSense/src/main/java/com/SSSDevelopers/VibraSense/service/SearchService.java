@@ -27,7 +27,11 @@ public class SearchService {
 
     public String getAnswer(String question, Model model) {
         // because \ is an escape character
-        if(question.equals(learnUrl) || question.equals(searchUrl) || question.equals(practiceUrl)){
+        String subStringLearn = question.substring(0,Math.min(6,question.length()));
+        String subStringSearch = question.substring(0,Math.min(7,question.length()));
+        String subStringPractice = question.substring(0,Math.min(9,question.length()));
+
+        if(subStringLearn.equals(learnUrl) || subStringSearch.equals(searchUrl) || subStringPractice.equals(practiceUrl)){
             return navigationService.navigateTo(question);
         }
         return geminiService.getAnswer(question,model);

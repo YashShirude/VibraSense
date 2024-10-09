@@ -24,6 +24,7 @@ const sizeLabels = {
     75: "75 Words",
     100: "100 Words"
 };
+const learnUrl =
 
 // Add event listeners when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
@@ -379,8 +380,15 @@ function submitQuestionToServer() {
     const inputQuestion = document.getElementById('inputQuestion').value;
     console.log("User's input question:", inputQuestion);
 
+    let modifiedQuestion = inputQuestion;
+
+    // Modify the question if it doesn't match certain predefined commands
+    if (inputQuestion != '/learn' && inputQuestion != '/search' && inputQuestion != '/practice') {
+        modifiedQuestion = `${inputQuestion}. Limit the response to ${wordLimit} words.`;
+    }
+
     // Append the word limit string to the input question
-    const modifiedQuestion = `${inputQuestion}. Limit the response to ${wordLimit} words.`;
+    console.log(inputQuestion);
     console.log("Modified question with word limit:", modifiedQuestion);
 
     // Check if inputQuestion is actually empty
@@ -403,6 +411,7 @@ function submitQuestionToServer() {
     // Submit the form
     document.getElementById('questionForm').submit();
 }
+
 
 
 
