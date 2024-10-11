@@ -26,6 +26,6 @@ public class LearnService {
             return navigationService.navigateTo(page);
         }
         // Call the Learning Modules Repository
-        return "Code the Learning Modules";
+        return "learn";
     }
 }

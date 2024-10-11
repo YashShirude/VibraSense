@@ -14,8 +14,8 @@ let encryptedAnswer = "";
 let isPaused = false;  // Track if highlighting is paused
 let highlightSpeed = 200;  // Default speed set to 200 ms
 const speedLabels = {
-    250: "Slow Speed",
-    200: "Normal Speed",
+    600: "Slow Speed",
+    350: "Normal Speed",
     150: "Fast Speed"
 };
 let wordLimit = 75;  // Default word limit
@@ -333,16 +333,16 @@ function handleKeyEvents(event) {
 
     if (event.ctrlKey && event.key === '1') {
         event.preventDefault();
-        highlightSpeed = 250;  // Set speed to 250 ms
-        console.log("Highlight speed set to 250 ms");
+        highlightSpeed = 600;  // Set speed to 250 ms
+        console.log("Highlight speed set to 600 ms");
         updateSpeedOnSidebar();  // Update the sidebar with the current speed
         speedStatus.textContent = "Slow Speed";  // Update encryption status in the sidebar
     }
 
     if (event.ctrlKey && event.key === '2') {
         event.preventDefault();
-        highlightSpeed = 200;  // Set speed to 200 ms
-        console.log("Highlight speed set to 200 ms");
+        highlightSpeed = 350;  // Set speed to 200 ms
+        console.log("Highlight speed set to 350 ms");
         updateSpeedOnSidebar();  // Update the sidebar with the current speed
     }
 

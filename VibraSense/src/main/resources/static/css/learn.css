@@ -111,10 +111,26 @@ i {
     margin: 0 auto;
     margin-top: 20px;
     color: white;
-    font-size: 18px;
+    font-size: 70px;
     overflow-y: auto;  /* Enables vertical scrolling */
     overflow-x: hidden;
 }
+
+
+#settingsSidebar {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed position */
+    top: 0; /* Align to the top */
+    right: 0; /* Align to the right */
+    width: 250px; /* Width of the sidebar */
+    height: 100%; /* Full height */
+    background-color: white; /* White background */
+    border-left: 1px solid #ccc; /* Left border */
+    padding: 20px; /* Padding inside the sidebar */
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3); /* Shadow effect */
+    transition: all 0.3s ease; /* Smooth transition for display */
+}
+
 /* Remove autofill suggestions and background color */
 .learn-bar input::-webkit-autofill {
     -webkit-box-shadow: 0 0 0 30px #24114e inset;
