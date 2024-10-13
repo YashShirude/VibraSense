@@ -38,6 +38,7 @@ public class SearchController {
 
     @PostMapping("/search")
     public String getAnswer(@RequestParam("question") String question, Model model) {
+        System.out.println(question);
         return searchService.getAnswer(question,model);
     }
 }

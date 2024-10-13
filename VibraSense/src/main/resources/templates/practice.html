@@ -1,17 +1,97 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Ask a Question</title>
-      <script src="/js/practiceLogic.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VibraSense</title>
+    <link rel="stylesheet" href="/css/practice.css" />
+    <!-- Linking your CSS file -->
+    <style>
+        /* General page styling */
 
+    </style>
 </head>
 <body>
-<form action="/practice" method="post">
-  <label for="inputPracticeExercise">Search for Practice Exercise:</label>
-  <input type="text" id="inputPracticeExercise" name="exercise" required>
-  <button type="submit">Submit</button>
-</form>
-<h1>Practice Exercises coming Soon!!</h1>
+<div class="container">
+    <h1>VibraSense</h1>
+    <i>where curiosity meets knowledge</i>
 
+    <!-- Gradient background that contains the search bar and exercises -->
+    <div class="gradient-background">
+        <!-- Search bar and button -->
+        <div class="practice-bar">
+            <form action="/practice" method="post">
+                <input
+                        type="text"
+                        id="inputQuestion"
+                        name="question"
+                        placeholder="Practice"
+                        required
+                        autocomplete="off"
+                />
+                <input type="hidden" id="realQuestionInput" name="question" />
+                <button
+                        type="submit"
+                        id="submitQuestion"
+                        onclick="submitQuestionToServer()"
+                ></button>
+            </form>
+        </div>
+
+        <div class="spacing"></div>
+
+        <!-- Exercise list -->
+        <div class="exercise">
+            <div>Exercise 1: Home Row</div>
+            <div>
+                <span><b>Duration:</b> 2 Minutes</span>
+                <span><b>Characters:</b> 20</span>
+            </div>
+        </div>
+
+        <div class="exercise">
+            <div>Exercise 2: Top Row</div>
+            <div>
+                <span><b>Duration:</b> 2 Minutes</span>
+                <span><b>Characters:</b> 20</span>
+            </div>
+        </div>
+
+        <div class="exercise">
+            <div>Exercise 3: Bottom Row</div>
+            <div>
+                <span><b>Duration:</b> 2 Minutes</span>
+                <span><b>Characters:</b> 20</span>
+            </div>
+        </div>
+
+        <div class="exercise">
+            <div>Exercise 4: Numbers</div>
+            <div>
+                <span><b>Duration:</b> 2 Minutes</span>
+                <span><b>Characters:</b> 20</span>
+            </div>
+        </div>
+
+        <div class="exercise">
+            <div>Exercise 5: Combined Test</div>
+            <div>
+                <span><b>Duration:</b> 5 Minutes</span>
+                <span><b>Characters:</b> 50</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar section -->
+<div id="settingsSidebar">
+    <h2>Settings</h2>
+    <div>
+        <span>Current Speed: <span id="currentSpeed">Normal Speed</span></span>
+    </div>
+</div>
+
+<!-- JavaScript file for logic -->
+<script src="/js/practiceLogic.js"></script>
 </body>
 </html>
