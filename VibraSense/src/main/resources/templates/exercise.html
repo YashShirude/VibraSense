@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VibraSense-Exercise</title>
+    <link rel="stylesheet" href="css/exercise.css" />
+    <!-- Linking your new CSS file -->
+</head>
+<body>
+<div class="container">
+    <h1>VibraSense</h1>
+    <i>where curiosity meets knowledge</i>
+
+    <div class="gradient-background">
+        <!-- Search bar and button -->
+        <div class="exercise-bar">
+            <form id="exerciseForm" action="/exercise" method="get">
+                <!-- Form for handling search -->
+                <input
+                        type="text"
+                        id="exerciseAnswer"
+                        name="answer"
+                        placeholder="Exercise"
+                        required
+                        autocomplete="off"
+                />
+                <button
+                        type="submit"
+                        id="submitAnswer"
+                        onclick="submitAnswerToServer()"
+                ></button>
+            </form>
+        </div>
+
+        <!-- Area to display the answer -->
+        <div class="exercise-character">
+            <!--            TODO: Add the exercise string here-->
+            <p id="characterDisplay"></p>
+        </div>
+    </div>
+</div>
+
+<div id="settingsSidebar">
+    <h2>Settings</h2>
+    <div>
+        <span>Current Speed: <span id="currentSpeed">Normal Speed</span></span>
+    </div>
+    <!-- You can add more settings options here -->
+</div>
+
+<div id="popup">Incorrect</div>
+
+<script src="js/exerciseLogic.js"></script>
+<!-- Link to the JavaScript file -->
+</body>
+</html>

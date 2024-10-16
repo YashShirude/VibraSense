@@ -14,7 +14,7 @@
     <div class="gradient-background">
         <!-- Search bar and button -->
         <div class="search-bar">
-            <form action="/search" method="post">  <!-- Form for handling search -->
+            <form id="questionForm" action="/search" method="post">  <!-- Form for handling search -->
                 <input type="text" id="inputQuestion" name="question" placeholder="Search" required autocomplete="off">
                 <input type="hidden" id="realQuestionInput" name="question">
                 <button type="submit" id="submitQuestion" onclick="submitQuestionToServer()"></button>
@@ -44,6 +44,6 @@
 </div>
 
 
-<script src="/js/searchLogic.js"></script> <!-- Link to the JavaScript file -->
+    <script src="/js/searchLogic.js"></script> <!-- Link to the JavaScript file -->
 </body>
 </html>

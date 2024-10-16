@@ -24,7 +24,6 @@ const sizeLabels = {
     75: "75 Words",
     100: "100 Words"
 };
-const learnUrl =
 
 // Add event listeners when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
@@ -383,8 +382,8 @@ function submitQuestionToServer() {
     let modifiedQuestion = inputQuestion;
 
     // Modify the question if it doesn't match certain predefined commands
-    if (inputQuestion != '/learn' && inputQuestion != '/search' && inputQuestion != '/practice') {
-        modifiedQuestion = `${inputQuestion}. Limit the response to ${wordLimit} words.`;
+    if (inputQuestion !== '/learn' && inputQuestion !== '/search' && inputQuestion !== '/practice') {
+        modifiedQuestion = ". Limit the response to " + wordLimit + "words.";
     }
 
     // Append the word limit string to the input question

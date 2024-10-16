@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 @Service
-public class PracticeService {
+public class ExerciseService {
     NavigationService navigationService;
     @Value("${learnUrl}")
     private String learnUrl;
@@ -16,21 +16,13 @@ public class PracticeService {
     private String practiceUrl;
 
     @Autowired
-    public PracticeService(NavigationService navigationService) {
+    public ExerciseService(NavigationService navigationService) {
         this.navigationService = navigationService;
     }
 
     public String getExercise(String exercise, Model model) {
-        if(exercise.equals(learnUrl) || exercise.equals(searchUrl) || exercise.equals(practiceUrl)){
-            return navigationService.navigateTo(exercise);
-        }
-        // fetch 5 from the database
-        for(int i=1;i<=5;i++){
-            String temp = "" + i;
-            if(exercise.equals(temp)){
-                return "exercise";
-            }
-        }
-        return "practice";
+        // TODO: fetch exercise from the repository
+        // TODO: add the exercise in the model and then return exercise
+        return "exercise";
     }
 }

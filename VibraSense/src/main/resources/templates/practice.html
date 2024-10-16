@@ -6,10 +6,6 @@
     <title>VibraSense</title>
     <link rel="stylesheet" href="/css/practice.css" />
     <!-- Linking your CSS file -->
-    <style>
-        /* General page styling */
-
-    </style>
 </head>
 <body>
 <div class="container">
@@ -23,17 +19,16 @@
             <form action="/practice" method="post">
                 <input
                         type="text"
-                        id="inputQuestion"
-                        name="question"
+                        id="inputExercise"
+                        name="exercise"
                         placeholder="Practice"
                         required
                         autocomplete="off"
                 />
-                <input type="hidden" id="realQuestionInput" name="question" />
                 <button
                         type="submit"
-                        id="submitQuestion"
-                        onclick="submitQuestionToServer()"
+                        id="submitExercise"
+                        onclick="submitExerciseToServer()"
                 ></button>
             </form>
         </div>
