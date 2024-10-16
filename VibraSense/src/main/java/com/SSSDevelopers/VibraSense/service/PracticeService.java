@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 @Service
 public class PracticeService {
     NavigationService navigationService;
+    ExerciseService exerciseService;
     @Value("${learnUrl}")
     private String learnUrl;
     @Value("${searchUrl}")
@@ -16,8 +17,9 @@ public class PracticeService {
     private String practiceUrl;
 
     @Autowired
-    public PracticeService(NavigationService navigationService) {
+    public PracticeService(NavigationService navigationService,ExerciseService exerciseService) {
         this.navigationService = navigationService;
+        this.exerciseService = exerciseService;
     }
 
     public String getExercise(String exercise, Model model) {
@@ -28,7 +30,7 @@ public class PracticeService {
         for(int i=1;i<=5;i++){
             String temp = "" + i;
             if(exercise.equals(temp)){
-                return "exercise";
+                return exerciseService.getExercise(exercise,model);
             }
         }
         return "practice";

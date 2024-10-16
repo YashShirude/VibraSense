@@ -7,8 +7,7 @@ const speedLabels = {
     350: "Normal Speed",
     150: "Fast Speed"
 };
-const stringFromRepository = "abcdefghij1234567890"; // Example 20-character string
-
+var stringFromRepository = /*[[${exerciseCharacters}]]*/ 'abcdefghij1234567890'; // Default value for fallback
 // Variable to hold the user input
 let userText = "";
 let displayIndex = 0;
@@ -18,7 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("keydown", handleKeyEvents);
 
     const characterDisplay = document.getElementById('characterDisplay');
-
+    stringFromRepository = characterDisplay.textContent; // Getting the value from the HTML element
+    console.log("Fetched exercise characters2:", exerciseCharacters);
     // Retrieve text and highlight speed from session storage
     highlightSpeed = parseInt(sessionStorage.getItem('highlightSpeed')) || 200;
     characterDisplay.textContent = stringFromRepository.charAt(0);

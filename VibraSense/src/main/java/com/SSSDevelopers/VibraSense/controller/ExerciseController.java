@@ -23,7 +23,7 @@ public class ExerciseController {
     }
 
     @PostMapping("/exercise")
-    public String getExercise(@RequestParam("exercise") String exercise, Model model) {
-        return exerciseService.getExercise(exercise,model);
+    public String getExercise(@RequestParam("exercise") String exerciseTypeId, Model model) {
+        return exerciseService.getExercise(exerciseTypeId,model);
     }
 }

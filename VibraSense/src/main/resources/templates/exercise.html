@@ -36,7 +36,7 @@
         <!-- Area to display the answer -->
         <div class="exercise-character">
             <!--            TODO: Add the exercise string here-->
-            <p id="characterDisplay"></p>
+            <p id="characterDisplay" th:text="${exerciseCharacters}"></p>
         </div>
     </div>
 </div>
@@ -52,6 +52,11 @@
 <div id="popup">Incorrect</div>
 
 <script src="js/exerciseLogic.js"></script>
-<!-- Link to the JavaScript file -->
+<script>
+    // Set the exercise characters dynamically from the backend
+    const characterDisplay = document.getElementById('characterDisplay');
+    const exerciseCharacters = characterDisplay.textContent; // Getting the value from the HTML element
+    console.log("Fetched exercise characters:", exerciseCharacters);
+</script>
 </body>
 </html>
