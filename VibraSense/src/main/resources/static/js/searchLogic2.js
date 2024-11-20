@@ -12,10 +12,10 @@ let isHighlightingPaused = false;  // Track if highlighting is paused
 let currentHighlightText = "";
 let encryptedAnswer = "";
 let isPaused = false;  // Track if highlighting is paused
-let highlightSpeed = 200;  // Default speed set to 200 ms
+let highlightSpeed = 2000;  // Default speed set to 200 ms
 const speedLabels = {
     600: "Slow Speed",
-    350: "Normal Speed",
+    2000: "Normal Speed",
     150: "Fast Speed"
 };
 let wordLimit = 75;  // Default word limit
@@ -25,6 +25,11 @@ const sizeLabels = {
     100: "100 Words"
 };
 let ws;
+let isReconnecting = false;
+const MAX_RECONNECT_ATTEMPTS = 5;
+let reconnectAttempts = 0;
+const WEBSOCKET_URL = 'ws://192.168.19.238:8080/ws';
+const RECONNECT_DELAY = 5000;
 // Add event listeners when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -64,6 +69,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     }
 
+    document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && (!ws || ws.readyState !== WebSocket.OPEN)) {
+                connectWebSocket();
+            }
+    });
+
     // Set up the event listener for search input encryption
     const searchInput = document.getElementById('inputQuestion');
     if (searchInput) {
@@ -90,57 +101,82 @@ function connectWebSocket() {
         return;
     }
 
-    // Prevent multiple reconnection attempts
     if (isReconnecting) {
+        console.log('Already attempting to reconnect');
+        return;
+    }
+
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        console.error('Max reconnection attempts reached');
+        updateConnectionStatus('Failed to connect');
         return;
     }
 
     isReconnecting = true;
+    updateConnectionStatus('Connecting...');
 
-    // Use the server's IP address
-    ws = new WebSocket('ws://192.168.19.238:8080/ws');
+    try {
+        ws = new WebSocket(WEBSOCKET_URL);
+        setupWebSocketHandlers();
+    } catch (error) {
+        console.error('Error creating WebSocket connection:', error);
+        handleConnectionFailure();
+    }
+}
 
+function setupWebSocketHandlers() {
     ws.onopen = () => {
         console.log('WebSocket connection established');
         isReconnecting = false;
-        const textInput = document.getElementById('textInput');
-        if (textInput) {
-            textInput.disabled = false;
-        }
+        reconnectAttempts = 0;
+        updateConnectionStatus('Connected');
+        enableInputs();
     };
 
     ws.onclose = (event) => {
         console.log('WebSocket connection closed. Code:', event.code, 'Reason:', event.reason);
-        const textInput = document.getElementById('textInput');
-        if (textInput) {
-            textInput.disabled = true;
-        }
+        updateConnectionStatus('Disconnected');
+        disableInputs();
 
-        // Only attempt to reconnect if it wasn't a normal closure
         if (event.code !== 1000) {
-            setTimeout(() => {
-                isReconnecting = false;
-                connectWebSocket();
-            }, 5000);
+            handleReconnection();
         }
     };
 
     ws.onerror = (error) => {
         console.error('WebSocket error:', error);
+        updateConnectionStatus('Error');
     };
 
-    ws.onmessage = (event) => {
-        console.log('Received message:', event.data);
-        try {
-            const response = JSON.parse(event.data);
-            // Handle any responses from the server
-            if (response.status === "processed") {
-                console.log(`Server processed character at index ${response.index}: ${response.char}`);
-            }
-        } catch (e) {
-            console.error('Error parsing server message:', e);
+    ws.onmessage = handleWebSocketMessage;
+}
+
+function handleWebSocketMessage(event) {
+    console.log('Received message:', event.data);
+    try {
+        const response = JSON.parse(event.data);
+        if (response.status === "processed") {
+            console.log(`Server processed character at index ${response.index}: ${response.char}`);
+            // You can add additional handling here if needed
+            updateProcessingStatus(response);
         }
-    };
+    } catch (e) {
+        console.error('Error parsing server message:', e);
+    }
+}
+
+function handleReconnection() {
+    reconnectAttempts++;
+    setTimeout(() => {
+        isReconnecting = false;
+        connectWebSocket();
+    }, RECONNECT_DELAY);
+}
+
+function handleConnectionFailure() {
+    isReconnecting = false;
+    updateConnectionStatus('Connection Failed');
+    console.error('Failed to create WebSocket connection');
 }
 
 // Function to gradually display the answer
@@ -236,7 +272,7 @@ function moveHighlightToStartOfText() {
 // Update the start or resume highlighting function to use the highlightSpeed
 function startOrResumeHighlighting() {
     const answerDisplay = document.getElementById('answerDisplay');
-    const text = isEncrypted ? encryptedAnswer : answer; // Use correct version of text
+    const text = isEncrypted ? encryptedAnswer : answer;
 
     if (!text) return;
 
@@ -248,42 +284,79 @@ function startOrResumeHighlighting() {
     }
 
     if (isHighlighting) {
-        clearInterval(highlightInterval); // Pause the existing highlighting if needed
+        clearInterval(highlightInterval);
     }
 
     isHighlighting = true;
 
-    // Start or resume highlighting from the current index
     highlightInterval = setInterval(() => {
         if (index < text.length) {
-            // Check if the current character is a full stop
             if (answer[index] === '.') {
-                sentenceStartStack.push(index); // Push the full stop index into the stack
+                sentenceStartStack.push(index);
             }
 
-            // Highlight text up to the current index
+            // Update display
             answerDisplay.innerHTML = `<span style="background-color: green;">${text.substring(0, index + 1)}</span>${text.substring(index + 1)}`;
 
-            // Send the current character to ESP32 via WebSocket
-            const uppercaseAnswer = answer.toUpperCase();
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    char: uppercaseAnswer[index],
-                    index: index
-                }));
-                console.log("Sent character to ESP32:", answer[index]);
-            } else {
-                console.error("WebSocket is not open. Cannot send character.");
-            }
+            // Send character to WebSocket if connected
+            sendCharacterToServer(index);
 
             index++;
         } else {
-            clearInterval(highlightInterval); // Stop when highlighting completes
+            clearInterval(highlightInterval);
             isHighlighting = false;
+            updateProcessingStatus({ status: 'completed' });
         }
-    }, highlightSpeed); // Use the highlight speed variable
+    }, highlightSpeed);
 }
 
+function sendCharacterToServer(currentIndex) {
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+        console.error('WebSocket is not connected. Cannot send character.');
+        return;
+    }
+
+    const uppercaseAnswer = answer.toUpperCase();
+    try {
+        ws.send(JSON.stringify({
+            char: uppercaseAnswer[currentIndex],
+            index: currentIndex
+        }));
+        console.log("Sent character to server:", uppercaseAnswer[currentIndex]);
+    } catch (error) {
+        console.error('Error sending character:', error);
+    }
+}
+
+// UI Update Functions
+function updateConnectionStatus(status) {
+    const statusElement = document.getElementById('connectionStatus');
+    if (statusElement) {
+        statusElement.textContent = `Connection Status: ${status}`;
+        statusElement.className = `status-${status.toLowerCase()}`;
+    }
+}
+
+function updateProcessingStatus(response) {
+    const statusElement = document.getElementById('processingStatus');
+    if (statusElement) {
+        if (response.status === 'processed') {
+            statusElement.textContent = `Processing: Character ${response.index}`;
+        } else if (response.status === 'completed') {
+            statusElement.textContent = 'Processing: Complete';
+        }
+    }
+}
+
+function enableInputs() {
+    const inputs = document.querySelectorAll('.websocket-dependent');
+    inputs.forEach(input => input.disabled = false);
+}
+
+function disableInputs() {
+    const inputs = document.querySelectorAll('.websocket-dependent');
+    inputs.forEach(input => input.disabled = true);
+}
 
 // Function to pause highlighting
 function pauseHighlighting() {
